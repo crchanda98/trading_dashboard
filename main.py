@@ -1,18 +1,9 @@
-import os
 from datetime import datetime as dt, timedelta
 from smartapi import SmartConnect
 import pandas as pd
-from datetime import datetime as dt, timedelta, date
 import pyotp
 import streamlit as st
-import traceback
 import time
-import json
-import numpy as np
-import os
-from yaml.loader import SafeLoader
-import yaml
-import requests
 import utils
 import wget
 
@@ -21,7 +12,7 @@ st.set_page_config(layout="wide")
 
 @st.cache_data()
 def get_client_info():
-    _client_info = pd.read_csv("../data_lake/data.csv")
+    _client_info = pd.read_csv("../data/data.csv")
     _client_info = _client_info[_client_info.status == "Active"]
     _client_info = _client_info.drop_duplicates(subset="name", keep="last")
     _client_info = _client_info.set_index("name")
@@ -31,7 +22,7 @@ def get_client_info():
 @st.cache_data()
 def download_ao_instruments():
     _url = "https://margincalculator.angelbroking.com/OpenAPI_File/files/OpenAPIScripMaster.json"
-    wget.download(_url, out="../data_lake/base_dir/")
+    wget.download(_url, out="../data/")
 
 
 download_ao_instruments()
@@ -39,7 +30,7 @@ download_ao_instruments()
 
 @st.cache_data()
 def read_instrument():
-    _instruments_ao = pd.read_json("../data_lake/base_dir/OpenAPIScripMaster.json")
+    _instruments_ao = pd.read_json("../data/OpenAPIScripMaster.json")
     return _instruments_ao
 
 
@@ -59,16 +50,6 @@ def get_tradable_stocks():
 
 
 tradable_stocks = get_tradable_stocks()
-
-
-@st.cache_data()
-def get_client_info():
-    _client_info = pd.read_csv("./df2.csv")
-    _client_info = _client_info.drop_duplicates(subset="name", keep="last")
-    _client_info = _client_info.set_index("name")
-    return _client_info
-
-
 client_info = get_client_info()
 
 
